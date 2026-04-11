@@ -1,0 +1,4 @@
+{
+  "vllm_bf16": {"label": "vLLM BF16", "hz": 0.812, "mean_ms": 1231, "p95_ms": 1232, "memory_gib": 7.16, "tokens_per_request": 234},
+  "vllm_fp8": {"label": "vLLM FP8", "hz": 0.992, "mean_ms": 1008, "p95_ms": 1008, "memory_gib": 3.95, "tokens_per_request": 256}
+}
