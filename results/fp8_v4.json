@@ -1,0 +1,12 @@
+{
+  "label": "FP8 PTQ (simulated)",
+  "simulated_latency_ms": 42227.54633737107,
+  "checkpoint_size_gb": 8.819954602047801,
+  "calibration_samples": 32,
+  "quantizers_inserted": 756,
+  "validation": "passed",
+  "total_gb": 4.4095458984375,
+  "visual_gb": 1.2455215454101562,
+  "language_model_gb": 3.1640243530273438,
+  "lm_head_gb": 0.57958984375
+}

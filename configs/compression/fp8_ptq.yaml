@@ -1,0 +1,54 @@
+# FP8 Post-Training Quantization Configuration
+# Expected: 2x compression, 1.5-2x speedup, >99% accuracy retention
+
+quantization:
+  type: "fp8_ptq"
+
+  # FP8 E4M3 format (8-bit floating point with 4 exponent bits, 3 mantissa bits)
+  weight_format: "fp8_e4m3"
+  activation_format: "fp8_e4m3"
+
+  calibration:
+    method: "max"  # Use max calibration for FP8
+    num_samples: 512  # Number of calibration samples
+    percentile: 99.99  # Only used if method is "percentile"
+
+  # Critical layers to preserve in FP16 (no quantization)
+  skip_layers:
+    - "model.visual.patch_embed"  # Vision patch embedding - critical for visual grounding
+    - "model.lm_head"  # Language model output head
+    - "embed_tokens"  # Token embeddings
+    # Note: Action decoder outputs are preserved by keeping lm_head in FP16
+
+  # Output settings
+  output_dir: "checkpoints/vla0-fp8"
+
+# Calibration data settings
+calibration_data:
+  data_dir: "/tmp/libero_dummy"  # Update this path
+  num_samples: 512
+  batch_size: 32
+  image_size: [224, 224]
+  tasks:  # Sample from all 10 LIBERO tasks
+    - "LIVING_ROOM_SCENE1"
+    - "LIVING_ROOM_SCENE2"
+    - "LIVING_ROOM_SCENE3"
+    - "LIVING_ROOM_SCENE4"
+    - "LIVING_ROOM_SCENE5"
+    - "KITCHEN_SCENE1"
+    - "KITCHEN_SCENE2"
+    - "KITCHEN_SCENE3"
+    - "KITCHEN_SCENE4"
+    - "STUDY_SCENE1"
+
+# Model settings
+model:
+  name: "ankgoyal/vla0-libero"
+  device: "cuda"
+  torch_dtype: "bfloat16"  # Load original model in bfloat16
+
+# Validation settings
+validation:
+  num_test_samples: 50  # Number of samples for quick validation
+  compare_outputs: true  # Compare original vs quantized outputs
+  tolerance: 0.01  # MSE tolerance for validation

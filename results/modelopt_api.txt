@@ -1,0 +1,30 @@
+modelopt version: 0.33.1
+torch version: 2.5.1+cu124
+GPU: NVIDIA H100 PCIe, 80GB
+
+--- mtq.quantize signature ---
+(model: torch.nn.modules.module.Module, config: dict[str, Union[Any, QuantizeConfig]], forward_loop: Callable[[nn.Module], None] | None = None) -> nn.Module
+
+forward_loop: takes the MODEL as argument, should run calibration data through it. No return needed.
+
+--- Key functions ---
+mtq.quantize(model, config, forward_loop) -> quantized model
+mtq.disable_quantizer(model) - disable quantizers (NOT finalize_calibration which doesn't exist)
+mtq.calibrate(model) - context manager for calibration mode
+mtq.print_quant_summary(model) - print quantization summary
+
+--- finalize_calibration: DOES NOT EXIST ---
+
+--- Pre-built configs ---
+FP8_DEFAULT_CFG: FP8 E4M3 with max calibration, lm_head/router/gate disabled
+INT8_DEFAULT_CFG: INT8 per-axis weights, per-tensor activations, max calibration
+INT4_AWQ_CFG: INT4 weight-only with AWQ lite, block_size 128
+
+--- FP8_DEFAULT_CFG details ---
+{'quant_cfg': {'*weight_quantizer': {'num_bits': (4, 3), 'axis': None}, '*input_quantizer': {'num_bits': (4, 3), 'axis': None}, 'nn.BatchNorm1d': {'*': {'enable': False}}, 'nn.BatchNorm2d': {'*': {'enable': False}}, 'nn.BatchNorm3d': {'*': {'enable': False}}, 'nn.LeakyReLU': {'*': {'enable': False}}, '*lm_head*': {'enable': False}, '*proj_out.*': {'enable': False}, '*block_sparse_moe.gate*': {'enable': False}, '*router*': {'enable': False}, '*mlp.gate.*': {'enable': False}, '*mlp.shared_expert_gate.*': {'enable': False}, '*output_layer*': {'enable': False}, 'output.*': {'enable': False}, 'default': {'enable': False}}, 'algorithm': 'max'}
+
+--- INT8_DEFAULT_CFG details ---
+{'quant_cfg': {'*weight_quantizer': {'num_bits': 8, 'axis': 0}, '*input_quantizer': {'num_bits': 8, 'axis': None}, same skip patterns}, 'algorithm': 'max'}
+
+--- INT4_AWQ_CFG details ---
+{'quant_cfg': {'*weight_quantizer': {'num_bits': 4, 'block_sizes': {-1: 128, 'type': 'static'}, 'enable': True}, '*input_quantizer': {'enable': False}, same skip patterns}, 'algorithm': {'method': 'awq_lite', 'alpha_step': 0.1}}

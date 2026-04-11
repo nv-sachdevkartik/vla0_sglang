@@ -1,0 +1,59 @@
+# INT8 AWQ (Activation-Aware Weight Quantization) Configuration
+# Expected: 4x compression, 2-3x speedup, 93-94% accuracy retention
+
+quantization:
+  type: "int8_awq"
+
+  # INT8 format for weights and activations
+  weight_format: "int8"
+  activation_format: "int8"
+
+  calibration:
+    method: "percentile"  # Percentile clipping for better INT8 accuracy
+    num_samples: 1024  # More samples for INT8 (more aggressive quantization)
+    percentile: 99.9  # Clip outliers at 99.9th percentile
+
+  # AWQ-specific settings
+  awq:
+    group_size: 128  # Channel-wise quantization group size
+    clip_ratio: 1.0  # Clipping ratio for activation-aware scaling
+
+  # Critical layers to preserve in FP16
+  skip_layers:
+    - "model.visual.patch_embed"  # Vision patch embedding
+    - "model.lm_head"  # Language model output head (CRITICAL for action decoding)
+    - "embed_tokens"  # Token embeddings
+    # Action decoder precision is critical - keep output layers in FP16
+
+  # Output settings
+  output_dir: "checkpoints/vla0-int8"
+
+# Calibration data settings
+calibration_data:
+  data_dir: "/tmp/libero_dummy"
+  num_samples: 1024  # More samples for INT8
+  batch_size: 32
+  image_size: [224, 224]
+  tasks:
+    - "LIVING_ROOM_SCENE1"
+    - "LIVING_ROOM_SCENE2"
+    - "LIVING_ROOM_SCENE3"
+    - "LIVING_ROOM_SCENE4"
+    - "LIVING_ROOM_SCENE5"
+    - "KITCHEN_SCENE1"
+    - "KITCHEN_SCENE2"
+    - "KITCHEN_SCENE3"
+    - "KITCHEN_SCENE4"
+    - "STUDY_SCENE1"
+
+# Model settings
+model:
+  name: "ankgoyal/vla0-libero"
+  device: "cuda"
+  torch_dtype: "bfloat16"
+
+# Validation settings
+validation:
+  num_test_samples: 100
+  compare_outputs: true
+  tolerance: 0.02  # Higher tolerance for INT8

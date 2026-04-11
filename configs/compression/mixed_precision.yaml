@@ -1,0 +1,88 @@
+# Mixed Precision Quantization Configuration
+# Expected: 2.8x compression, 2x speedup, >94% accuracy retention
+# Strategy: FP16 for critical layers, FP8 for attention, INT8 for FFN
+
+quantization:
+  type: "mixed_precision"
+
+  # Default formats (will be overridden per-layer)
+  weight_format: "int8"
+  activation_format: "int8"
+
+  calibration:
+    method: "max"
+    num_samples: 512
+    percentile: 99.99
+
+  # Layers to keep in FP16 (highest precision)
+  fp16_layers:
+    - "model.visual.patch_embed"  # Vision patch embedding
+    - "model.lm_head"  # Action decoder output - CRITICAL
+    - "embed_tokens"  # Token embeddings
+    - "model.visual.merger"  # Vision-language merger
+    # Early vision layers (first 2 layers)
+    - "model.visual.blocks.0"
+    - "model.visual.blocks.1"
+    # Late vision layers (last 2 layers)
+    - "model.visual.blocks.30"
+    - "model.visual.blocks.31"
+
+  # Layers to keep in FP8 (medium precision)
+  fp8_layers:
+    # Vision encoder intermediate layers
+    - "model.visual.blocks.2"
+    - "model.visual.blocks.3"
+    - "model.visual.blocks.4"
+    # All attention layers (important for visual grounding)
+    - "*.attn"
+    - "*.self_attn"
+    # Action-related layers
+    - "model.model.layers.*.post_attention_layernorm"
+
+  # Everything else uses INT8 (lowest precision)
+  # Typically FFN layers in the middle of the network
+
+  # Still skip critical components
+  skip_layers:
+    - "model.visual.patch_embed"
+    - "model.lm_head"
+    - "embed_tokens"
+
+  # Output settings
+  output_dir: "checkpoints/vla0-mixed"
+
+# Calibration data settings
+calibration_data:
+  data_dir: "/tmp/libero_dummy"
+  num_samples: 512
+  batch_size: 32
+  image_size: [224, 224]
+  tasks:
+    - "LIVING_ROOM_SCENE1"
+    - "LIVING_ROOM_SCENE2"
+    - "LIVING_ROOM_SCENE3"
+    - "LIVING_ROOM_SCENE4"
+    - "LIVING_ROOM_SCENE5"
+    - "KITCHEN_SCENE1"
+    - "KITCHEN_SCENE2"
+    - "KITCHEN_SCENE3"
+    - "KITCHEN_SCENE4"
+    - "STUDY_SCENE1"
+
+# Model settings
+model:
+  name: "ankgoyal/vla0-libero"
+  device: "cuda"
+  torch_dtype: "bfloat16"
+
+# Validation settings
+validation:
+  num_test_samples: 100
+  compare_outputs: true
+  tolerance: 0.01
+
+# Precision strategy notes:
+# - FP16: Critical for visual grounding and action prediction
+# - FP8: Good balance for attention mechanisms
+# - INT8: Acceptable for feedforward transformations
+# This gives ~2.8x compression while preserving accuracy

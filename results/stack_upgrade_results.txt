@@ -1,0 +1,56 @@
+============================================================
+VLA-0 Stack Upgrade Results
+============================================================
+Date: 2026-04-11
+GPU: H100 PCIe 80GB
+Driver: 550.107.02
+
+BEFORE:
+  torch: 2.5.1+cu124
+  CUDA (bundled): 12.4
+  cuDNN: BROKEN (CUDNN_STATUS_NOT_INITIALIZED)
+  modelopt: 0.33.1
+
+AFTER:
+  torch: 2.8.0+cu126
+  CUDA (bundled): 12.6
+  cuDNN: 9.10.2 (91002) - WORKING ✓
+  modelopt: 0.43.0rc2.dev101+g0357cb9ac (from source)
+  flash_attn: 2.8.3 ✓
+  torchvision: 0.23.0+cu126
+  triton: 3.4.0
+  numpy: 2.2.6
+
+============================================================
+Verification Results
+============================================================
+
+[✓] cuDNN Conv2d: WORKS
+[✓] cuDNN Conv3d: WORKS
+[✓] Model loads with cuDNN enabled (3.755B params)
+[✓] flash_attn 2.8.3 installed
+[✓] FP8 quantization (1520 quantizers inserted): WORKS
+[✓] FP8 forward pass: WORKS
+
+============================================================
+Benchmark Results (batch=1, 2 cameras, 224x224)
+============================================================
+
+No compile:   0.21 Hz, 4701 ms/inference
+torch.compile: 0.48 Hz, 2100 ms/inference (2.24x speedup)
+
+Notes:
+- Model config has use_flash_attention_2: False (using SDPA)
+- torch.compile has many graph breaks due to VLM dynamic shapes
+- Significant speedup potential from enabling FA2 in model config
+- The slow inference is due to autoregressive token generation
+  (8 action steps × 7 dims × 1000 bins = lots of tokens)
+
+============================================================
+Known Issues
+============================================================
+- numpy 2.2.6 installed (mink wants <2.0, soft constraint)
+- NVML warning (cosmetic, doesn't affect functionality)
+- modelopt warns: "transformers>=5.0 support is experimental"
+- torch.compile hits recompile limits on get_action_from_text_action
+  (due to dynamic action text content)
