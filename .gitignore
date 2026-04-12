@@ -67,3 +67,8 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+venv*/
+venv-vllm/
+__pycache__/
+*.pyc
