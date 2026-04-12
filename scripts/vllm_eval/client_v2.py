@@ -176,7 +176,7 @@ class VLLMActionClient:
         
         t0 = time.perf_counter()
         try:
-            response = requests.post(self.url, json=payload, timeout=60)
+            response = requests.post(self.url, json=payload, timeout=120)
             latency_ms = (time.perf_counter() - t0) * 1000
         except Exception as e:
             print(f"[VLLMClient] Request error: {e}")

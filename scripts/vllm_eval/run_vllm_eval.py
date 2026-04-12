@@ -80,7 +80,7 @@ def start_vllm_server(mode='bf16', port=8000):
         '--model', CKPT,
         '--trust-remote-code',
         '--max-model-len', '2048',
-        '--gpu-memory-utilization', '0.9',
+        '--gpu-memory-utilization', '0.6',
         '--port', str(port),
         '--dtype', 'auto',
     ]
