@@ -40,6 +40,9 @@ from pathlib import Path
 from datetime import datetime
 
 # ── Path setup for VLA-0 and RoboVerse ───────────────────────────────────────
+# Save original working directory before os.chdir
+_ORIG_CWD = os.getcwd()
+
 # Add VLA-0 source to path (needed for roboverse eval imports)
 # Adjust these paths to your VLA-0 installation
 VLA0_ROOT = os.environ.get("VLA0_ROOT", "/home/shadeform/vla0")
@@ -71,8 +74,8 @@ DEFAULT_MODEL_DIR = (
 DEFAULT_STATS_PATH = (
     "./dataset_stats.pkl"
 )
-# Resolve to absolute path before os.chdir changes cwd
-RESULTS_BASE = Path(os.path.abspath("./results/eval"))
+# Resolve to absolute path using ORIGINAL cwd (before os.chdir)
+RESULTS_BASE = Path(os.path.join(_ORIG_CWD, "results/eval"))
 
 # The exact system message VLA-0 was fine-tuned with.
 SYSTEM_MESSAGE_TEMPLATE = (
@@ -467,9 +470,9 @@ def main():
     )
     args = parser.parse_args()
 
-    # Resolve all paths to absolute BEFORE os.chdir changes cwd
-    args.stats_path = os.path.abspath(args.stats_path)
-    args.model_name = os.path.abspath(args.model_name) if not args.model_name.startswith("http") else args.model_name
+    # Resolve all paths relative to the ORIGINAL cwd (not VLA0_ROOT)
+    args.stats_path = os.path.join(_ORIG_CWD, args.stats_path) if not os.path.isabs(args.stats_path) else args.stats_path
+    args.model_name = os.path.join(_ORIG_CWD, args.model_name) if not os.path.isabs(args.model_name) and not args.model_name.startswith("http") else args.model_name
 
     RESULTS_BASE.mkdir(parents=True, exist_ok=True)
     stats = load_dataset_stats(args.stats_path)
