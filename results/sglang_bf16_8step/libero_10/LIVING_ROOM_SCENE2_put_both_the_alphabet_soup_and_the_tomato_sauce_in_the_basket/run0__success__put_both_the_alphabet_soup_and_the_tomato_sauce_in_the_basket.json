@@ -133,5 +133,5 @@
     "action_type": "original",
     "cfg_path": "libs/RoboVerse/roboverse/configs/img_libero_aug.yaml",
     "cfg_opts": "IMAGE.crop_img:0.875:IMAGE.img_size:224:IMAGE.cam_list:('3p1','3p2')",
-    "log_dir": "/home/shadeform/vla0-compression/results/full_eval_v2/sglang_bf16_8step/libero_10/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket"
+    "log_dir": "/home/<user>/vla0_sglang/results/full_eval_v2/sglang_bf16_8step/libero_10/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket"
 }

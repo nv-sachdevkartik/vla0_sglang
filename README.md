@@ -22,7 +22,7 @@ Same model, same BF16 weights, same accuracy. All speedup comes from SGLang's Fl
 ### Install
 
 ```bash
-git clone <this-repo> && cd vla0-compression
+git clone <this-repo> && cd vla0_sglang
 
 # Create venv
 python3 -m venv venv

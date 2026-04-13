@@ -45,7 +45,7 @@ _ORIG_CWD = os.getcwd()
 
 # Add VLA-0 source to path (needed for roboverse eval imports)
 # Adjust these paths to your VLA-0 installation
-VLA0_ROOT = os.environ.get("VLA0_ROOT", "/home/shadeform/vla0")
+VLA0_ROOT = os.environ.get("VLA0_ROOT", "/home/<user>/vla0")
 sys.path.insert(0, VLA0_ROOT)
 os.chdir(VLA0_ROOT)
 
