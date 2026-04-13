@@ -95,12 +95,12 @@ FP8 quantization shows no speedup over BF16 in SGLang (4.77 Hz vs 4.80 Hz). At 3
 
 | File | Description |
 |------|-------------|
-| `results/full_eval/baseline.json` | Baseline 50-episode results |
+| `results/ (validated SGLang eval)` | Baseline 50-episode results |
 | `results/full_eval/baseline_compile.json` | Compile 50-episode results |
-| `results/full_eval_v2/sglang_bf16_8step/summary.json` | SGLang 50-episode results |
+| `results/sglang_bf16_8step/` | SGLang 50-episode results |
 | `results/sglang_fp8_bench.json` | SGLang speed benchmarks (BF16 + FP8) |
 | `results/speed_optimization.json` | PyTorch speed sweep |
-| `scripts/full_eval_v2.py` | Eval script (connection-safe) |
+| `eval_libero.py` | Eval script (connection-safe) |
 | `DEPLOYMENT_GUIDE.md` | How to deploy with SGLang |
 
 ---

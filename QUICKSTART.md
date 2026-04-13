@@ -5,7 +5,7 @@
 ```bash
 # 1. Start server
 python -m sglang.launch_server \
-  --model-path checkpoints/vla0-original/model_last \
+  --model-path ./model \
   --port 30000 --trust-remote-code \
   --mem-fraction-static 0.15 --max-total-tokens 512
 
@@ -41,12 +41,12 @@ pip install sglang[all] torch
 from vla0_client import VLA0Client, start_server
 
 # Option A: Start server programmatically
-server = start_server("checkpoints/vla0-original/model_last")
+server = start_server("./model")
 
 # Option B: Assume server is already running
 client = VLA0Client(
     server_url="http://localhost:30000",
-    model_path="checkpoints/vla0-original/model_last",
+    model_path="./model",
     horizon=1,  # 1=fast (4.5 Hz), 8=default
 )
 
