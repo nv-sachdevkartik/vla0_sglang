@@ -378,7 +378,7 @@ def run_full_eval(
                 action_horizon=action_horizon,
                 skip_evaluated=False,
                 task_id_index=0,
-                task_id_count=num_tasks,
+                task_id_count=max(num_tasks, 10),  # total tasks in suite, controls seed count (50/count = seeds per task)
                 num_steps=0,
             )
 

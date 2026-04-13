@@ -35,9 +35,8 @@ pip install -e .
 # Install robosuite 1.4.1 (LIBERO requires 1.4.x API, NOT 1.5+)
 pip install robosuite==1.4.1
 
-# Install mujoco and EGL rendering support
-pip install mujoco
-pip install PyOpenGL PyOpenGL-accelerate
+# Install remaining dependencies
+pip install mujoco PyOpenGL PyOpenGL-accelerate bddl easydict lerobot
 ```
 
 ## Step 2: Download Model
@@ -69,12 +68,18 @@ model/
 
 ## Step 3: Install SGLang
 
-**Option A: Create a fresh venv**
+**Option A: Create a fresh venv (recommended — installs everything)**
 ```bash
 cd vla0-compression
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+# For accuracy eval (Step 6), also install robotics deps:
+pip install -e ~/vla0
+pip install -e ~/vla0/libs/RoboVerse
+pip install -e ~/vla0/libs/LIBERO
+pip install robosuite==1.4.1 mujoco bddl easydict lerobot PyOpenGL
 ```
 
 **Option B: If the repo already has a venv (e.g. cloned from a machine where it was set up)**
