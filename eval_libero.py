@@ -40,9 +40,11 @@ from pathlib import Path
 from datetime import datetime
 
 # ── Path setup for VLA-0 and RoboVerse ───────────────────────────────────────
-sys.path.insert(0, "/home/shadeform/vla0")
-sys.path.insert(0, "/home/shadeform/vla0-compression")
-os.chdir("/home/shadeform/vla0")
+# Add VLA-0 source to path (needed for roboverse eval imports)
+# Adjust these paths to your VLA-0 installation
+VLA0_ROOT = os.environ.get("VLA0_ROOT", "/home/shadeform/vla0")
+sys.path.insert(0, VLA0_ROOT)
+os.chdir(VLA0_ROOT)
 
 # ── LeRobot metadata monkey-patch ────────────────────────────────────────────
 # WHY: The LIBERO eval pipeline imports roboverse's lerobot dataloader, which
@@ -64,12 +66,12 @@ except Exception:
 
 # ── Constants ────────────────────────────────────────────────────────────────
 DEFAULT_MODEL_DIR = (
-    "/home/shadeform/vla0-compression/checkpoints/vla0-original/model_last"
+    "./model"
 )
 DEFAULT_STATS_PATH = (
-    "/home/shadeform/vla0-compression/checkpoints/vla0-original/dataset_stats.pkl"
+    "./dataset_stats.pkl"
 )
-RESULTS_BASE = Path("/home/shadeform/vla0-compression/results/full_eval_v2")
+RESULTS_BASE = Path("./results/eval")
 
 # The exact system message VLA-0 was fine-tuned with.
 SYSTEM_MESSAGE_TEMPLATE = (
