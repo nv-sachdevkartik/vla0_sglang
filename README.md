@@ -8,7 +8,20 @@ Validated serving pipeline for the VLA-0 robot action model. **84.0% accuracy, 4
 | **SGLang BF16** | **84.0% (42/50)** | **4.80 Hz** | **208 ms** |
 | | | **23× faster** | |
 
-Same model, same BF16 weights, same accuracy. All speedup comes from SGLang's FlashInfer kernels, prefix caching, and compiled decode.
+Same model, same BF16 weights, same accuracy. All speedup comes from SGLang's serving infrastructure.
+
+### Why SGLang?
+
+VLA-0 is a 3B parameter vision-language model that generates robot actions as text tokens. In PyTorch eager mode, every call loads all 3B parameters from GPU memory to compute each token sequentially. At batch=1, this is memory-bandwidth-bound: **0.21 Hz**.
+
+SGLang eliminates the framework overhead:
+
+- **CUDA Graphs** — Pre-records the GPU execution plan once, replays it every call. Eliminates Python overhead and kernel launch latency. Biggest single win.
+- **FlashInfer Kernels** — Fused attention (Q/K/V + attention + output in one CUDA kernel instead of many).
+- **Prefix Caching** — VLA-0's system prompt (~213 tokens) is identical every call. SGLang caches the KV states and skips recomputing them.
+- **Compiled Decode** — Token generation loop runs in optimized C++/CUDA instead of Python.
+
+These compose multiplicatively. None change the model weights or accuracy — they eliminate overhead that PyTorch eager doesn't optimize for. At 3B params batch=1, the bottleneck isn't compute — it's framework overhead. SGLang removes it.
 
 ---
 
