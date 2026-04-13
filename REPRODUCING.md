@@ -69,13 +69,27 @@ model/
 
 ## Step 3: Install SGLang
 
+**Option A: Create a fresh venv**
 ```bash
-pip install "sglang[all]>=0.4.0" torch numpy Pillow requests
+cd vla0-compression
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-Or use the provided requirements:
+**Option B: If the repo already has a venv (e.g. cloned from a machine where it was set up)**
 ```bash
-pip install -r requirements.txt
+cd vla0-compression
+source venv/bin/activate
+
+# Verify
+python -c "import sglang; print(sglang.__version__)"
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+```
+
+**Option C: Install into existing environment**
+```bash
+pip install "sglang[all]>=0.4.0" torch numpy Pillow requests
 ```
 
 **Tested versions:** sglang 0.5.10, torch 2.9.1+cu128
@@ -83,6 +97,9 @@ pip install -r requirements.txt
 ## Step 4: Start SGLang Server
 
 ```bash
+# Make sure venv is activated
+source venv/bin/activate
+
 python -m sglang.launch_server \
   --model-path ./model \
   --port 30000 \
@@ -105,6 +122,9 @@ Wait for `The server is fired up and ready to roll!`
 ## Step 5: Verify Speed (no robotics deps needed)
 
 ```bash
+# Make sure venv is activated
+source venv/bin/activate
+
 # Quick speed check using the shipped client
 python vla0_client.py --url http://localhost:30000 --model ./model
 
@@ -140,6 +160,9 @@ print(f"Speed: {1/np.mean(times):.1f} Hz, Latency: {np.mean(times)*1000:.0f}ms")
 ## Step 6: Reproduce Accuracy (requires full robotics stack from Step 1)
 
 ```bash
+# Make sure venv is activated
+source venv/bin/activate
+
 # Set VLA-0 source path
 export VLA0_ROOT=~/vla0
 
