@@ -71,7 +71,8 @@ DEFAULT_MODEL_DIR = (
 DEFAULT_STATS_PATH = (
     "./dataset_stats.pkl"
 )
-RESULTS_BASE = Path("./results/eval")
+# Resolve to absolute path before os.chdir changes cwd
+RESULTS_BASE = Path(os.path.abspath("./results/eval"))
 
 # The exact system message VLA-0 was fine-tuned with.
 SYSTEM_MESSAGE_TEMPLATE = (
@@ -465,6 +466,10 @@ def main():
         help="Path to dataset_stats.pkl for action denormalization.",
     )
     args = parser.parse_args()
+
+    # Resolve all paths to absolute BEFORE os.chdir changes cwd
+    args.stats_path = os.path.abspath(args.stats_path)
+    args.model_name = os.path.abspath(args.model_name) if not args.model_name.startswith("http") else args.model_name
 
     RESULTS_BASE.mkdir(parents=True, exist_ok=True)
     stats = load_dataset_stats(args.stats_path)
